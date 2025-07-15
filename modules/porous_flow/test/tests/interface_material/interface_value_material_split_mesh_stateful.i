@@ -15,16 +15,13 @@
     top_right = '2 2 0'
     block_id = 1
   [../]
-
-  [./interface]
-    type = SideSetsBetweenSubdomainsGenerator
+  [./split]
+    type = BreakMeshByBlockGenerator
     input = subdomain_id
-    primary_block = '0'
-    paired_block = '1'
-    new_boundary = 'interface'
   [../]
-
 []
+
+
 
 [Variables]
   [./u]
@@ -52,16 +49,16 @@
   [../]
 []
 
-# [InterfaceKernels]
-#   [tied]
-#     type = PenaltyInterfaceDiffusion
-#     variable = u
-#     neighbor_var = v
-#     jump_prop_name = "average_jump"
-#     penalty = 1e6
-#     boundary = 'interface'
-#   []
-# []
+[InterfaceKernels]
+  [tied]
+    type = PenaltyInterfaceDiffusion
+    variable = u
+    neighbor_var = v
+    penalty = 1e6
+    jump_prop_name = "average_jump"
+    boundary = 'interface'
+  []
+[]
 
 [BCs]
   [u_left]
@@ -103,9 +100,10 @@
       mat_prop_var_out_basename = diff_var
       nl_var_primary = u
       nl_var_secondary = v
+      couple_old_values_and_properties = true
   [../]
   [./interface_material_jump_primary_minus_secondary]
-      type = ADInterfaceValueMaterial # To test generic routines
+      type = InterfaceValueMaterial
       mat_prop_primary = diffusivity
       mat_prop_secondary = diffusivity
       var_primary = diffusivity_var
@@ -116,6 +114,7 @@
       mat_prop_var_out_basename = diff_var
       nl_var_primary = u
       nl_var_secondary = v
+      couple_old_values_and_properties = true
   [../]
   [./interface_material_jump_secondary_minus_primary]
       type = InterfaceValueMaterial
@@ -129,6 +128,7 @@
       mat_prop_var_out_basename = diff_var
       nl_var_primary = u
       nl_var_secondary = v
+      couple_old_values_and_properties = true
   [../]
   [./interface_material_jump_abs]
       type = InterfaceValueMaterial
@@ -142,6 +142,7 @@
       mat_prop_var_out_basename = diff_var
       nl_var_primary = u
       nl_var_secondary = v
+      couple_old_values_and_properties = true
   [../]
   [./interface_material_primary]
       type = InterfaceValueMaterial
@@ -155,6 +156,7 @@
       mat_prop_var_out_basename = diff_var
       nl_var_primary = u
       nl_var_secondary = v
+      couple_old_values_and_properties = true
   [../]
   [./interface_material_secondary]
       type = InterfaceValueMaterial
@@ -168,6 +170,7 @@
       interface_value_type = secondary
       nl_var_primary = u
       nl_var_secondary = v
+      couple_old_values_and_properties = true
   [../]
 []
 
@@ -208,6 +211,42 @@
     variable = diffusivity_secondary
     boundary = interface
   []
+  [./interface_material_avg_prev]
+    type = MaterialRealAux
+    property = diff_average_prev
+    variable = diffusivity_average_prev
+    boundary = interface
+  []
+  [./interface_material_jump_primary_minus_secondary_prev]
+    type = MaterialRealAux
+    property = diff_jump_primary_minus_secondary_prev
+    variable = diffusivity_jump_primary_minus_secondary_prev
+    boundary = interface
+  []
+  [./interface_material_jump_secondary_minus_primary_prev]
+    type = MaterialRealAux
+    property = diff_jump_secondary_minus_primary_prev
+    variable = diffusivity_jump_secondary_minus_primary_prev
+    boundary = interface
+  []
+  [./interface_material_jump_abs_prev]
+    type = MaterialRealAux
+    property = diff_jump_abs_prev
+    variable = diffusivity_jump_abs_prev
+    boundary = interface
+  []
+  [./interface_material_primary_prev]
+    type = MaterialRealAux
+    property = diff_primary_prev
+    variable = diffusivity_primary_prev
+    boundary = interface
+  []
+  [./interface_material_secondary_prev]
+    type = MaterialRealAux
+    property = diff_secondary_prev
+    variable = diffusivity_secondary_prev
+    boundary = interface
+  []
   [diffusivity_var]
     type = MaterialRealAux
     property = diffusivity
@@ -244,12 +283,38 @@
     family = MONOMIAL
     order = CONSTANT
   []
+  [./diffusivity_average_prev]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [./diffusivity_jump_primary_minus_secondary_prev]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [./diffusivity_jump_secondary_minus_primary_prev]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [./diffusivity_jump_abs_prev]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [./diffusivity_primary_prev]
+    family = MONOMIAL
+    order = CONSTANT
+  []
+  [./diffusivity_secondary_prev]
+    family = MONOMIAL
+    order = CONSTANT
+  []
 []
 
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = NEWTON
+  num_steps = 3
+  dt = 0.5
 []
 
 [Outputs]

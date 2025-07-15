@@ -293,11 +293,23 @@ public:
    */
   const libMesh::QBase * const & qRuleFace() const { return constify_ref(_current_qrule_face); }
 
+    /**
+   * Returns the reference to the current quadrature being used on a current neighbor face
+   * @return A _reference_.  Make sure to store this as a reference!
+   */
+  // const libMesh::QBase * const & qRuleFace() const { return constify_ref(_current_qrule_neighbor_face); } //[JN]
+
   /**
    * Returns the reference to the current quadrature being used on a current face
    * @return A _reference_.  Make sure to store this as a reference!
    */
   libMesh::QBase * const & writeableQRuleFace() { return _current_qrule_face; }
+
+    /**
+   * Returns the reference to the current quadrature being used on a current neighbor face
+   * @return A _reference_.  Make sure to store this as a reference!
+   */
+  // libMesh::QBase * const & writeableQRuleFace() { return _current_qrule_neighbor_face; } //[JN]
 
   /**
    * Returns the reference to the current quadrature being used
@@ -1963,6 +1975,8 @@ private:
 
   void reinitFENeighbor(const Elem * neighbor, const std::vector<Point> & reference_points);
 
+  std::pair<const Elem *, unsigned int> find_neighbor_element(const Elem * const elem) const; //[JN]
+
   template <typename Points, typename Coords>
   void setCoordinateTransformation(const libMesh::QBase * qrule,
                                    const Points & q_points,
@@ -2490,6 +2504,8 @@ private:
   FEBase * _current_fe_face_helper;
   /// quadrature rule used on faces
   libMesh::QBase * _current_qrule_face;
+  /// quadrature rule used on neighbor faces
+  // libMesh::QBase * _current_qrule_neighbor_face; //[JN]
   /// The current arbitrary quadrature rule used on element faces
   ArbitraryQuadrature * _current_qface_arbitrary;
   /// The current quadrature points on a face

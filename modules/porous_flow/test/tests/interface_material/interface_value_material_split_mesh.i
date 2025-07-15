@@ -15,16 +15,13 @@
     top_right = '2 2 0'
     block_id = 1
   [../]
-
-  [./interface]
-    type = SideSetsBetweenSubdomainsGenerator
+  [./split]
+    type = BreakMeshByBlockGenerator
     input = subdomain_id
-    primary_block = '0'
-    paired_block = '1'
-    new_boundary = 'interface'
   [../]
-
 []
+
+
 
 [Variables]
   [./u]
@@ -52,16 +49,16 @@
   [../]
 []
 
-# [InterfaceKernels]
-#   [tied]
-#     type = PenaltyInterfaceDiffusion
-#     variable = u
-#     neighbor_var = v
-#     jump_prop_name = "average_jump"
-#     penalty = 1e6
-#     boundary = 'interface'
-#   []
-# []
+[InterfaceKernels]
+  [tied]
+    type = PenaltyInterfaceDiffusion
+    variable = u
+    neighbor_var = v
+    jump_prop_name = "average_jump"
+    penalty = 1e6
+    boundary = 'interface'
+  []
+[]
 
 [BCs]
   [u_left]
@@ -105,7 +102,7 @@
       nl_var_secondary = v
   [../]
   [./interface_material_jump_primary_minus_secondary]
-      type = ADInterfaceValueMaterial # To test generic routines
+      type = InterfaceValueMaterial
       mat_prop_primary = diffusivity
       mat_prop_secondary = diffusivity
       var_primary = diffusivity_var
