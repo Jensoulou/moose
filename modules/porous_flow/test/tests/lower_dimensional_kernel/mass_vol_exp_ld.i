@@ -28,7 +28,7 @@
         new_boundary = 'interface'
     []
     [fracture]
-        type = LowerDBlockFromSidesetNodesMappingGenerator
+        type = LowerDBlockFromSidesetGenerator
         sidesets = 'interface'
         new_block_id = 2
         new_block_name = 'fracture'
@@ -105,13 +105,13 @@
         variable = AuxV_A
         # block = '0 1'
     []
-    # [AuxK_A]
-    #     # PorousFlow_volumetric_strain_rate_qp]
-    #     type = MaterialRealAux
-    #     property = PorousFlow_volumetric_strain_rate_qp
-    #     variable = AuxV_A
-    #     # block = '0 1'
-    # []
+    [AuxK_A]
+        # PorousFlow_volumetric_strain_rate_qp]
+        type = MaterialRealAux
+        property = PorousFlow_volumetric_strain_rate_qp
+        variable = AuxV_A
+        # block = '0 1'
+    []
     [AuxK_B]
         # dPorousFlow_volumetric_strain_rate_qp_dvar]
         type = MaterialStdVectorRealGradientAux

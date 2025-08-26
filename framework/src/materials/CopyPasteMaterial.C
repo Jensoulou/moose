@@ -50,7 +50,7 @@ CopyPasteMaterialTempl<T, is_ad>::CopyPasteMaterialTempl(
     _neighbor_prop_names(getParam<std::string>("neighbor_prop_names")),
     _mp_primary(MaterialPropertyInterface::getGenericMaterialPropertyByName<T, is_ad>(
                   _neighbor_prop_names,
-                  _fe_problem.getMaterialData(Moose::NEIGHBOR_MATERIAL_DATA, parameters.get<THREAD_ID>("_tid")),
+                  _fe_problem.getMaterialData(Moose::INTERFACE_MATERIAL_DATA, parameters.get<THREAD_ID>("_tid")),
                   0)),
     // _prop_values(getParam<Real>("prop_values")), 
     _properties(declareGenericProperty<T, is_ad>(_prop_names))
@@ -82,19 +82,14 @@ CopyPasteMaterialTempl<T, is_ad>::computeQpProperties()
   std::cout << "______neighbor_elem id: " << _assembly.neighbor()->id() << std::endl;
   std::cout << "______neighbor_elem dim: " << _assembly.neighbor()->dim() << std::endl;
   std::cout << "______neighbor_elem face pt: " << _assembly.neighbor()->side_ptr(side)->point(0) << std::endl;
-  std::cout << "______neighbor_elem face pt: " << _assembly.neighbor()->side_ptr(side)->point(1) << std::endl;
   // std::cout << "______neighbor_elem qrule face: " << _assembly.qruleFace(neighbor_elem, side)->n_points() << std::endl;
   // std::cout << "______current_elem qrule face: " << _qrule->n_points() << std::endl;
 
-  // const auto & qpts = _assembly.qRuleNeighbor();
+  const auto & qpts = _assembly.qPointsFaceNeighbor();
 
   std::cout << "==== Face neighbor quadrature points ====" << std::endl;
-  for (unsigned int i = 0; i < _assembly.qRuleNeighbor()->n_points(); ++i){
-    const Point & qpoint = _assembly.qRuleNeighbor()->get_points()[i];
-    std::cout << "QP " << i << ": " << qpoint << std::endl;
-    std::cout << "  Point[" << i << "] = " << qpoint << std::endl;
-    if constexpr (std::is_same_v<T, Real>)
-      std::cout << "  Material value[" << i << "] = " << _mp_primary[i] << std::endl;
+  for (unsigned int i = 0; i < qpts.size(); ++i){
+    std::cout << "  Point[" << i << "] = " << qpts[i] << std::endl;
     // std::cout << " Real[_qp]: " << _mp_primary[i] << std::endl;
   }
 
@@ -142,7 +137,7 @@ CopyPasteMaterialTempl<T, is_ad>::computeQpProperties()
   // }
 
   if constexpr (std::is_same_v<T, Real>)
-    std::cout << "At _qp " << _qp << " at " << _q_point[_qp] << " Real[_qp]: " << _mp_primary[_qp] << std::endl;
+    std::cout << "At _qp " << _qp << " at " << _q_point[_qp] << " Real[_qp]: " << _mp_primary[_qp] << " Real[2]: " << _mp_primary[2] << " Real[3]: " << _mp_primary[3] << std::endl;
   else if constexpr (std::is_same_v<T, RealVectorValue>)
     std::cout << "RealVectorValue: " << _mp_primary[_qp] << std::endl;
   else if constexpr (std::is_same_v<T, RankTwoTensor>)

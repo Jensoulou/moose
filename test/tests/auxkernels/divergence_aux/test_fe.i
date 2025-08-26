@@ -68,36 +68,10 @@
 
 [AuxVariables]
   [div]
-    # family = MONOMIAL
-    # order = CONSTANT
-  []
-  [aux_div]
-    family = MONOMIAL
-    order = CONSTANT
-  []
-  [aux_u]
-    family = MONOMIAL
-    order = CONSTANT
-  []
-  [aux_v]
     family = MONOMIAL
     order = CONSTANT
   []
 []
-
-[ICs]
-  [aux_u_ic]
-    type = FunctionIC
-    function = '2*x*x'
-    variable = aux_u
-  []
-  [aux_v_ic]
-    type = FunctionIC
-    function = '-5*y'
-    variable = aux_v
-  []
-[]
-
 
 [AuxKernels]
   [divergence]
@@ -105,12 +79,6 @@
     variable = div
     u = u
     v = v
-  []
-  [div_aux]
-    type = ADDivergenceAux
-    variable = aux_div
-    u = aux_u
-    v = aux_v
   []
 []
 
@@ -184,6 +152,5 @@
 
 [Outputs]
   csv = true
-  exodus = true
   hide = 's1 s2 s3 s4'
 []
