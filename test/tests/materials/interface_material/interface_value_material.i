@@ -52,16 +52,16 @@
   [../]
 []
 
-# [InterfaceKernels]
-#   [tied]
-#     type = PenaltyInterfaceDiffusion
-#     variable = u
-#     neighbor_var = v
-#     jump_prop_name = "average_jump"
-#     penalty = 1e6
-#     boundary = 'interface'
-#   []
-# []
+[InterfaceKernels]
+  [tied]
+    type = PenaltyInterfaceDiffusion
+    variable = u
+    neighbor_var = v
+    jump_prop_name = "average_jump"
+    penalty = 1e6
+    boundary = 'interface'
+  []
+[]
 
 [BCs]
   [u_left]

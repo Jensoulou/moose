@@ -103,7 +103,6 @@ Assembly::Assembly(SystemBase & sys, THREAD_ID tid)
     _current_qrule_face(nullptr),
     _current_qface_arbitrary(nullptr),
     _current_qrule_neighbor(nullptr),
-    // _current_qrule_neighbor_face(nullptr), //[JN]
     _need_JxW_neighbor(false),
     _qrule_msm(nullptr),
     _custom_mortar_qrule(false),
@@ -688,22 +687,6 @@ Assembly::setFaceQRule(QBase * qrule, unsigned int dim)
     _unique_fe_face_helper[dim]->attach_quadrature_rule(qrule);
   }
 }
-
-// void //[JN]
-// Assembly::setNeighborFaceQRule(QBase * qrule, unsigned int dim) 
-// {
-//   _current_qrule_neighbor_face = qrule;
-
-//   for (auto & it : _fe_face[dim])
-//     it.second->attach_quadrature_rule(qrule);
-//   for (auto & it : _vector_fe_face[dim])
-//     it.second->attach_quadrature_rule(qrule);
-//   if (!_unique_fe_face_helper.empty())
-//   {
-//     mooseAssert(dim < _unique_fe_face_helper.size(), "We should not be indexing out of bounds");
-//     _unique_fe_face_helper[dim]->attach_quadrature_rule(qrule);
-//   }
-// }
 
 void
 Assembly::setLowerQRule(QBase * qrule, unsigned int dim)
@@ -1700,50 +1683,9 @@ Assembly::reinitFENeighbor(const Elem * neighbor, const std::vector<Point> & ref
   }
 }
 
-std::pair<const Elem *, unsigned int> //[JN]
-Assembly::find_neighbor_element(const Elem * const elem) const
-{
-  for (const auto & neighbor :  _mesh.getMesh().active_element_ptr_range())
-  {
-    if (elem->subdomain_id() == neighbor->subdomain_id())
-      continue;
-
-    for (unsigned int side = 0; side < neighbor->n_sides(); ++side) 
-    {
-      unsigned int shared_points = 0; 
-      for (unsigned int k = 0; k < neighbor->side_ptr(side)->n_nodes(); ++k)
-      {
-        const Point & coord_neighbor = neighbor->side_ptr(side)->point(k);
-        for (unsigned int i = 0; i < elem->n_nodes(); ++i)
-        {
-          const Point & coord_elem = elem->point(i);
-          if (coord_elem == coord_neighbor)
-          {
-            shared_points = shared_points + 1; 
-          }
-        }
-      }
-      if (shared_points == 2)
-      {
-        return std::make_pair(neighbor, side); 
-      }
-    }
-  }
-  
-  return std::make_pair(nullptr, 0);  // No neighbor+side found
-}
-
 void
 Assembly::reinitNeighbor(const Elem * neighbor, const std::vector<Point> & reference_points)
 {
-  std::cout << "[DEBUG ASSENBLY] _current_elem id: " << _current_elem->id() << std::endl;
-  std::cout << "[DEBUG ASSENBLY] neighbor id: " << neighbor->id() << std::endl;
-  std::cout << "[DEBUG ASSENBLY] _current_elem->dim() : " <<  _current_elem->dim()  << std::endl;
-  std::cout << "[DEBUG ASSENBLY] _mesh_dimension: " << _mesh_dimension << std::endl;
-  // if (_current_elem->dim() < _mesh_dimension){ //[JN]
-  //   auto result = find_neighbor_element(_current_elem);
-  //   neighbor = result.first;
-  // }
   unsigned int neighbor_dim = neighbor->dim();
   mooseAssert(_current_neighbor_subdomain_id == neighbor->subdomain_id(),
               "Neighbor subdomain ID has not been correctly set");
@@ -1921,15 +1863,6 @@ Assembly::reinitFVFace(const FaceInfo & fi)
   _current_neighbor_elem = fi.neighborPtr();
   _current_side = fi.elemSideID();
   _current_neighbor_side = fi.neighborSideID();
-  // if (_current_elem->dim() < _mesh_dimension){ //[JN]
-  //   auto result = find_neighbor_element(_current_elem);
-  //   _current_neighbor_elem = result.first;
-  //   _current_neighbor_side = result.second; 
-  // }
-  std::cout << "[DEBUG ASSENBLY reinitFVFace] _current_elem id: " << _current_elem->id() << std::endl;
-  std::cout << "[DEBUG ASSENBLY reinitFVFace] neighbor id: " << _current_neighbor_elem->id() << std::endl;
-  std::cout << "[DEBUG ASSENBLY reinitFVFace] _current_elem->dim() : " <<  _current_elem->dim()  << std::endl;
-  std::cout << "[DEBUG ASSENBLY reinitFVFace] _mesh_dimension: " << _mesh_dimension << std::endl;
   mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
               "current subdomain has been set incorrectly");
 
@@ -2006,22 +1939,11 @@ Assembly::setFaceQRule(const Elem * const elem, const unsigned int side)
     setFaceQRule(rule, elem_dimension);
 }
 
-// void //[JN]
-// Assembly::setNeighborFaceQRule(const Elem * const elem, const unsigned int side)
-// {
-//   const auto elem_dimension = elem->dim();
-//   //// Make sure the qrule is the right one
-//   auto rule = qruleFace(elem, side);
-//   if (_current_qrule_face != rule)
-//     setNeighborFaceQRule(rule, elem_dimension);
-// }
-
 void
 Assembly::reinit(const Elem * const elem, const unsigned int side)
 {
   _current_elem = elem;
   _current_neighbor_elem = nullptr;
-  // _current_qrule_neighbor_face = nullptr; //[JN]
   mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
               "current subdomain has been set incorrectly");
   _current_side = side;
@@ -2041,7 +1963,6 @@ Assembly::reinit(const Elem * elem, unsigned int side, const std::vector<Point> 
 {
   _current_elem = elem;
   _current_neighbor_elem = nullptr;
-  // _current_qrule_neighbor_face = nullptr; //[JN]
   mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
               "current subdomain has been set incorrectly");
   _current_side = side;
@@ -2079,7 +2000,6 @@ Assembly::reinitElemAndNeighbor(const Elem * elem,
                                 unsigned int neighbor_side,
                                 const std::vector<Point> * neighbor_reference_points)
 {
-  std::cout << "[DEBUG ASSENBLY reinitElemAndNeighbor] _current_elem id: " << _current_elem->id() << std::endl;
   _current_neighbor_side = neighbor_side;
 
   reinit(elem, side);
@@ -2280,15 +2200,6 @@ Assembly::reinitNeighborFaceRef(const Elem * neighbor,
                                 const std::vector<Point> * const pts,
                                 const std::vector<Real> * const weights)
 {
-  std::cout << "[DEBUG ASSENBLY reinitNeighborFaceRef] _current_elem id: " << _current_elem->id() << std::endl;
-  std::cout << "[DEBUG ASSENBLY reinitNeighborFaceRef] neighbor id: " << neighbor->id() << std::endl;
-  std::cout << "[DEBUG ASSENBLY reinitNeighborFaceRef] _current_elem->dim() : " <<  _current_elem->dim()  << std::endl;
-  std::cout << "[DEBUG ASSENBLY reinitNeighborFaceRef] _mesh_dimension: " << _mesh_dimension << std::endl;
-  
-  // if (_current_elem->dim() < _mesh_dimension){ //[JN]
-  //   auto result = find_neighbor_element(_current_elem);
-  //   neighbor = result.first;
-  // }
   _current_neighbor_elem = neighbor;
 
   unsigned int neighbor_dim = neighbor->dim();
