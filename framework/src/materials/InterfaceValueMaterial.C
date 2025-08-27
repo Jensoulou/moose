@@ -10,8 +10,8 @@
 #include "InterfaceValueMaterial.h"
 #include "InterfaceValueTools.h"
 
-// registerMooseObject("MooseTestApp", InterfaceValueMaterial);
-// registerMooseObject("MooseTestApp", ADInterfaceValueMaterial);
+registerMooseObject("MooseApp", InterfaceValueMaterial);
+registerMooseObject("MooseApp", ADInterfaceValueMaterial);
 
 template <bool is_ad>
 InputParameters
