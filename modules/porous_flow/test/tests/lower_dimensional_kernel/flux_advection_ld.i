@@ -188,9 +188,9 @@
 []
 
 [Outputs]
-  file_base = 'test/tests/lower_dimensional_kernel/flux_advection_ld'
   [csv]
     type = CSV
+    file_base = flux_advection_ld
   []
   exodus = true
 []

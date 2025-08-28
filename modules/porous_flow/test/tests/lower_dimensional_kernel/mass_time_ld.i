@@ -189,9 +189,9 @@
 []
 
 [Outputs]
-  file_base = 'test/tests/lower_dimensional_kernel/mass_time_ld'
   [csv]
     type = CSV
+    file_base = mass_time_ld
   []
   exodus = false
 []

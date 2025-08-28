@@ -421,9 +421,10 @@
 []
 
 [Outputs]
-  file_base = 'test/tests/lower_dimensional_kernel/mass_vol_exp_ld' #'lower_dimensional_kernel/mass_vol_exp_ld'
+  #file_base = 'test/tests/lower_dimensional_kernel/mass_vol_exp_ld' #'lower_dimensional_kernel/mass_vol_exp_ld'
   [csv]
     type = CSV
+    file_base = mass_vol_exp_ld
   []
   exodus = true
 []

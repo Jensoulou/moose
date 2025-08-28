@@ -212,9 +212,9 @@
 []
 
 [Outputs]
-  file_base = 'test/tests/lower_dimensional_kernel/heat_advection_ld'
   [csv]
     type = CSV
+    file_base = heat_advection_ld
   []
   exodus = true
 []

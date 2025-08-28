@@ -139,9 +139,9 @@
 []
 
 [Outputs]
-  file_base = 'test/tests/lower_dimensional_kernel/heat_conduction_ld'
   [csv]
     type = CSV
+    file_base = heat_conduction_ld
   []
   exodus = true
 []
