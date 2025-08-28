@@ -254,14 +254,14 @@ SideSetsBetweenLowerDimAndHigherDim::flood(const Elem * elem,
     return;
 
   // Skip if element is not in specified subdomains
-  if (_check_subdomains && !elementSubdomainIdInList(elem, _included_subdomain_ids))
+  if (_check_subdomains && !elementSubdomainIdInList(elem, _included_subdomain_ids)){
     std::cout << "[DEBUG_FLOOD] Element subdomain ID: " << elem->subdomain_id() << std::endl;
     std::cout << "[DEBUG_FLOOD] Allowed subdomain IDs: ";
     for (const auto & id : _included_subdomain_ids)
       std::cout << id << " ";
     std::cout << std::endl;
     return;
-
+  }
   _visited[side_id].insert(elem);
 
   // Request to compute normal vectors
