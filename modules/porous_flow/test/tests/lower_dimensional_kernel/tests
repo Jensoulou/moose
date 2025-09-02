@@ -1,0 +1,42 @@
+[Tests]
+  [heat_conduction_ld]
+    type = 'CSVDiff'
+    input = 'heat_conduction_ld.i'
+    csvdiff = 'heat_conduction_ld.csv'
+    rel_err = 1.0E-5
+    threading = '!pthreads'
+    requirement = 'The system shall correctly expose a higher temp growth in the fracture block, compared to block0 adn block1'
+    #design = 'porous_flow/tests/mass_conservation/mass_conservation_tests.md PorousFlowFluidMass.md'
+    #issues = '#13155'
+  []
+  [heat_advection_ld]
+    type = 'CSVDiff'
+    input = 'heat_advection_ld.i'
+    csvdiff = 'heat_advection_ld.csv'
+    rel_err = 1.0E-5
+    threading = '!pthreads'
+    requirement = 'The system shall correctly expose a higher temp growth in the fracture block, compared to block0 adn block1'
+    #design = 'porous_flow/tests/mass_conservation/mass_conservation_tests.md PorousFlowFluidMass.md'
+    #issues = '#13155'
+  []
+  [flux_advection_ld]
+    type = 'CSVDiff'
+    input = 'flux_advection_ld.i'
+    csvdiff = 'flux_advection_ld.csv'
+    rel_err = 1.0E-5
+    threading = '!pthreads'
+    requirement = 'The system shall correctly expose a higher pp growth in the fracture block, compared to block0 adn block1'
+    #design = 'porous_flow/tests/mass_conservation/mass_conservation_tests.md PorousFlowFluidMass.md'
+    #issues = '#13155'
+  []
+  [mass_time_ld]
+    type = 'CSVDiff'
+    input = 'mass_time_ld.i'
+    csvdiff = 'mass_time_ld.csv'
+    rel_err = 1.0E-5
+    threading = '!pthreads'
+    requirement = 'The system shall correctly expose a higher pp growth in the fracture block, compared to block0 adn block1'
+    #design = 'porous_flow/tests/mass_conservation/mass_conservation_tests.md PorousFlowFluidMass.md'
+    #issues = '#13155'
+  []
+[]
