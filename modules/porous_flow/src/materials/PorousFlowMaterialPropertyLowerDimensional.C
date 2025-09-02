@@ -64,12 +64,12 @@ PorousFlowMaterialPropertyLowerDimensional::computeQpProperties()
   std::cout << "Hello from my PorousFlowMaterialPropertyLowerDimensional::computeQpProperties!" << std::endl;
   std::cout << _mp_name + "_ld" << std::endl;
 
-  if (_gradient)
+  if (_gradient){
     std::cout << "Hello from my PorousFlowMaterialPropertyLowerDimensional::computeQpProperties!, in the IF" << std::endl;
     std::cout << "d" + _mp_name + "_dvar_ld" << std::endl;
     // _mp_dprimary_dvar = &declareProperty<std::vector<RealGradient>>("d" + _mp_name + "_dvar_ld");
     (*_mp_dprimary_dvar)[_qp] = (*_mp_dsecondary_dvar)[_qp];
-  
+  }
 }
 
 void
