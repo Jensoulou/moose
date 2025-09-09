@@ -173,9 +173,16 @@ LowerDBlockFromSidesetNodesMappingGenerator::generate()
   // Making an important assumption that at least our boundary elements are the same on all
   // processes even in distributed mesh mode (this is reliant on the correct ghosting functors
   // existing on the mesh)
-  std::cout << " [DEBUG] Nodes MApping " << std::endl;
-  std::ofstream outfile("node_id_mapping.txt", std::ios::app);
+  std::cout << " [DEBUG] Nodes MApping 1" << std::endl;
+  // std::ofstream outfile("node_id_mapping.txt", std::ios::trunc);
+  std::string filename = "node_id_mapping.txt";                
+  std::fstream fs;
+  fs.open(filename, std::ios::out | std::ios::trunc); // truncate mode
+  if (!fs.is_open())
+      std::cerr << "Error opening file " << filename << std::endl;
+  fs.close();
   std::cout << " [DEBUG] Nodes MApping 2 " << std::endl;
+  bool first = true; 
   for (auto & [i, elem_side] : element_sides_on_boundary)
   {
     Elem * elem = elem_side.elem;
@@ -199,20 +206,70 @@ LowerDBlockFromSidesetNodesMappingGenerator::generate()
     side_elem->set_id(max_elem_id + i);
     side_elem->set_unique_id(max_unique_id + i);
 
+    std::cout << " [DEBUG] Nodes MApping 3" << std::endl;
+    for (unsigned int j = 0; j < elem->side_ptr(side)->n_nodes(); ++j){
+      std::cout << " [DEBUG] Nodes MApping 7. First: " << first << std::endl;
+      const Node * old_node = elem->side_ptr(side)->node_ptr(j);
+      Node * new_node; 
+      if (first){
+        new_node = mesh->add_point(*old_node);
+        first = false; 
+      }
+      else{
+        fs.open(filename, std::ios::in); // open for reading
+        if (!fs.is_open())
+        {
+            std::cerr << "Error opening file " << filename << " for reading.\n";
+        }
+        dof_id_type n1, n2;
+        dof_id_type new_id = libMesh::DofObject::invalid_id; 
+        while (fs >> n1 >> n2)
+        {
+            if (n1 == old_node->id())
+            {
+                new_id = n2;
+                break; 
+            }
+        }
+        fs.close();
+        if(new_id == libMesh::DofObject::invalid_id){
+          new_node = mesh->add_point(*old_node);
+        }
+        else{
+          new_node = mesh->node_ptr(new_id);
+        }
+      }
+      
+      side_elem->set_node(j) = new_node; 
+      std::cout << "side_elem: "
+                << side_elem 
+                << std::endl;
+      std::cout << "old_node: "
+                << old_node 
+                << " | id: " << old_node->id()
+                << " | x=" << (*old_node)(0)
+                << " | y=" << (*old_node)(1)
+                << " | z=" << (*old_node)(2) << std::endl;
+      std::cout << "new_node: "
+                << new_node
+                << " | id: " << new_node->id()
+                << " | x=" << (*new_node)(0)
+                << " | y=" << (*new_node)(1)
+                << " | z=" << (*new_node)(2) << std::endl;
+
+      fs.open(filename, std::ios::out | std::ios::app); // append mode
+      if (!fs.is_open())
+      {
+          std::cerr << "Error opening file " << filename << " for writing.\n";
+      }
+      fs << old_node->id() << " " << new_node->id() << "\n";
+      fs.close();
+      std::cout << " [DEBUG] Nodes MApping 6" << std::endl;
+    }
+
     // Finally, add the lower-dimensional element to the Mesh.
     mesh->add_elem(side_elem.release());
-
-    std::cout << " [DEBUG] Nodes MApping 6" << std::endl;
-    for (unsigned int i = 0; i < elem->side_ptr(side)->n_nodes(); ++i){
-      std::cout << " [DEBUG] Nodes MApping 3" << std::endl;
-      const Node * old_node = elem->side_ptr(side)->node_ptr(i);
-      std::cout << " [DEBUG] Nodes MApping 7" << std::endl;
-      const Node * new_node = side_elem->node_ptr(i); /// LIGNE QUI NE PASSE PAS!!!!
-
-      std::cout << " [DEBUG] Nodes MApping 4" << std::endl;
-      outfile << old_node->id() << " " << new_node->id() << "\n";
-      std::cout << " [DEBUG] Nodes MApping 5" << std::endl;
-    }
+    std::cout << " [DEBUG] Nodes MApping 4" << std::endl;
   };
 
   // Assign block name, if provided
@@ -224,5 +281,6 @@ LowerDBlockFromSidesetNodesMappingGenerator::generate()
   mesh->prepare_for_use();
   mesh->skip_partitioning(skip_partitioning_old);
 
+  std::cout << " [DEBUG] Nodes MApping 5" << std::endl;
   return mesh;
 }
