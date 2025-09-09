@@ -284,3 +284,23 @@ LowerDBlockFromSidesetNodesMappingGenerator::generate()
   std::cout << " [DEBUG] Nodes MApping 5" << std::endl;
   return mesh;
 }
+// Mapping of the LowerDim nodes to the corrsponding nodes from 
+// their interior parent, but it isn't working (seg fault). I believe 
+// it is because I have to force the creation of new nodes before 
+// returning the mesh (the problem comes from after the class I worked on). 
+// Here is what it is coded: 
+// let's say we have 2D elements along them we wish to create a lower dim one
+// the ld elem will be created on the side of the 2D elem, aka interior parent elem
+// side_elem will have two nodes, at exactly the same position as the ones on the side of
+// interior_parent_elem. 
+// side A: nodes 5 and 4
+// elem_side A': nodes 25 and 26 
+// --> Mapping 5->25 & 4->26
+// side B: nodes 12 and 5
+// elem_side B': nodes 27 and 25: Indeed, the corresponding node of 5 already exists, So we need 
+// to appropriately set the correct existing node to be also part of elem_side B'
+// --> Mapping 12->27 & 5->25
+// 
+// but it is not working, seg fault at the 'return mesh' line
+
+
