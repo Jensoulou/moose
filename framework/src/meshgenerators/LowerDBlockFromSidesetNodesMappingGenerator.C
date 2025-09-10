@@ -256,6 +256,8 @@ LowerDBlockFromSidesetNodesMappingGenerator::generate()
                 << " | x=" << (*new_node)(0)
                 << " | y=" << (*new_node)(1)
                 << " | z=" << (*new_node)(2) << std::endl;
+      std::cout << "elem->side_ptr(side)->node_ptr(j): " << elem->side_ptr(side)->node_ptr(j)
+                << " | side_elem->node_ptr(j): " << side_elem->node_ptr(j) << std::endl;
 
       fs.open(filename, std::ios::out | std::ios::app); // append mode
       if (!fs.is_open())
@@ -300,7 +302,7 @@ LowerDBlockFromSidesetNodesMappingGenerator::generate()
 // elem_side B': nodes 27 and 25: Indeed, the corresponding node of 5 already exists, So we need 
 // to appropriately set the correct existing node to be also part of elem_side B'
 // --> Mapping 12->27 & 5->25
-// 
+
 // but it is not working, seg fault at the 'return mesh' line
 
 
