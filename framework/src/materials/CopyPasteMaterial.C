@@ -70,7 +70,8 @@ void
 CopyPasteMaterialTempl<T, is_ad>::computeQpProperties()
 {
   auto [neighbor_elem, side] = find_neighbor_element(_current_elem);
-  std::cout << "_current_elem id: " << _current_elem->id() << std::endl;
+  std::cout << "_current_elem : " << _current_elem << " & neighbor (interior elem): " << _current_elem->interior_parent() << std::endl;
+  std::cout << "_current_elem id: " << _current_elem->id() << " & neighbor (interior elem) id: " << _current_elem->interior_parent()->id() << std::endl;
   std::cout << "_current_elem dim: " << _current_elem->dim() << std::endl;
   std::cout << "neighbor_elem id: " << neighbor_elem->id() << std::endl;
   std::cout << "neighbor_elem dim: " << neighbor_elem->dim() << std::endl;

@@ -28,7 +28,7 @@
         new_boundary = 'interface'
     []
     [fracture]
-        type = LowerDBlockFromSidesetNodesMappingGenerator
+        type = LowerDBlockFromSidesetGenerator #LowerDBlockFromSidesetNodesMappingGenerator
         sidesets = 'interface'
         new_block_id = 2
         new_block_name = 'fracture'
@@ -200,6 +200,11 @@
         type = PorousFlowCapillaryPressureVG
         m = 0.6
         alpha = 1.3
+    []
+    [side_uo]
+        type = MatSideUserObject
+        mat_prop = 'PorousFlow_volumetric_strain_rate_qp_ld'
+        boundary = 'interface'
     []
 []
 
