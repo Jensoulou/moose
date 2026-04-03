@@ -8,6 +8,7 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "PorousFlowPorosityExponentialBase.h"
+#include "MathUtils.h"
 
 InputParameters
 PorousFlowPorosityExponentialBase::validParams()
@@ -57,11 +58,33 @@ PorousFlowPorosityExponentialBase::initQpStatefulProperties()
   }
 }
 
+// fct(x, y_min, y_max, y_0, k): 
+// {
+//   x_0 = 1/k * ln((y_max - y_0)/(y_0 - y_min))
+//   return y_min + (y_max - y_min) * 1/(1+exp(-(k(x-x_0))))
+// }
+
+// Real
+// smoothClamp(const Real x,
+//             const Real y_min,
+//             const Real y_max,
+//             const Real y_0,
+//             const Real k)
+// {
+//   const Real x0 = std::log((y_max - y_0) / (y_0 - y_min)) / k;
+//   return y_min + (y_max - y_min) / (1.0 + std::exp(-k * (x - x0)));
+// }
+
 void
 PorousFlowPorosityExponentialBase::computeQpProperties()
 {
-  const Real a = atNegInfinityQp();
+  //const Real k = 5; // controls steepness of transition
+  //const Real b = MathUtils::clamp(atZeroQp(), 0.01, 0.99);
   const Real b = atZeroQp();
+  //const Real b = smoothClamp(b_raw, 0.01, 0.99, 0.1, k);
+  //const Real a = MathUtils::clamp(atNegInfinityQp(), b, 0.99);
+  const Real a = atNegInfinityQp();
+  //const Real a = smoothClamp(a_raw, b, 0.99, 0.5*(b + 0.99), k);
   const Real decay = decayQp();
   Real exp_term = 1.0; // set appropriately below
 

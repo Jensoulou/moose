@@ -11,6 +11,13 @@
 # temperature = 4
 # ref_temperature = 3.5
 # which yield porosity = 0.276599996677
+
+
+####################
+# Do not work when I run it individually but works in the testing apparently...
+####################
+
+
 [Mesh]
   type = GeneratedMesh
   dim = 3

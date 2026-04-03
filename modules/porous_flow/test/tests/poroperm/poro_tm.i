@@ -22,7 +22,7 @@
     initial_condition = 2
   []
   [temperature]
-    initial_condition = 4
+    initial_condition = 279
   []
   [disp_x]
   []
@@ -130,7 +130,7 @@
     ensure_positive = false
     porosity_zero = 0.5
     thermal_expansion_coeff = 0.5
-    reference_temperature = 3.5
+    reference_temperature = 278.5
   []
 []
 
@@ -142,4 +142,5 @@
 
 [Outputs]
   csv = true
+  exodus = true
 []
